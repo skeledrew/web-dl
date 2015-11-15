@@ -1,2 +1,4 @@
 coursera-dl*
 cookies.txt
+tests.py
+__pycache__*

@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 """
-Cookie handling module.
+Cookie handling module. (Ripped from coursera-dl)
+TODO: Convert to Hy and make generic.
 """
 
 import logging
@@ -19,8 +20,8 @@ except ImportError:
 
 from six.moves import StringIO
 from six.moves import http_cookiejar as cookielib
-from .define import CLASS_URL, AUTH_REDIRECT_URL, PATH_COOKIES, AUTH_URL_V3
-from .utils import mkdir_p, random_string
+#from .define import CLASS_URL, AUTH_REDIRECT_URL, PATH_COOKIES, AUTH_URL_V3
+#from .utils import mkdir_p, random_string
 
 # Monkey patch cookielib.Cookie.__init__.
 # Reason: The expires value may be a decimal string,
@@ -82,7 +83,7 @@ def login(session, username, password, class_name=None):
         logging.debug('Cleared .coursera.org cookies.')
     except KeyError:
         logging.debug('There were no .coursera.org cookies to be cleared.')
-
+    """
     # Hit class url
     if class_name is not None:
         class_url = CLASS_URL.format(class_name=class_name)
@@ -115,7 +116,7 @@ def login(session, username, password, class_name=None):
         'password': password,
         'webrequest': 'true'
     }
-
+    """
     # Auth API V3
     r = session.post(AUTH_URL_V3, data=data,
                      headers=headers, allow_redirects=False)

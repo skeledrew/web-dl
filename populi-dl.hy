@@ -7,7 +7,7 @@
 (import argparse requests ssl)
 (import [requests.adapters [HTTPAdapter]])
 (import [urllib3 [PoolManager]])
-(import [.cookies [AuthenticationFailed get_cookies make_cookie_values login TLSAdapter]])
+(import [.cookies [AuthenticationFailed get_cookies make_cookie_values TLSAdapter]])
 
 ;(defclass TLSAdapter [HTTPAdapter]
 ;          "A customized HTTP Adapter which uses TLS v1.2 for encrypted connections. (Ripped from coursera-dl/cookies.py)"
@@ -32,6 +32,13 @@
 
 (defn get-session []
     (setv (. pop session) (.mount (.Session requests) "https://" (TLSAdapter))))
+
+(defn get-page [url]
+      (setv r (.get (. pop session) url))
+      (try
+          (.raise_for_status r)
+          (catch [e requests.exceptions.HTTPError] (do (.error logging "Error %s getting page %s" e url) (raise)))
+          (else (. r text))))
 
 ; - Authenticate
 ;(get-auth
