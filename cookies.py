@@ -8,6 +8,8 @@ TODO: Convert to Hy and make generic.
 import logging
 import os
 import ssl
+import tempfile
+import getpass
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -21,13 +23,21 @@ except ImportError:
 from six.moves import StringIO
 from six.moves import http_cookiejar as cookielib
 #from .define import CLASS_URL, AUTH_REDIRECT_URL, PATH_COOKIES, AUTH_URL_V3
-#from .utils import mkdir_p, random_string
+#from .utils import mkdir_p
 
 # Monkey patch cookielib.Cookie.__init__.
 # Reason: The expires value may be a decimal string,
 # but the Cookie class uses int() ...
 __orginal_init__ = cookielib.Cookie.__init__
 
+if os.name == "posix":  # pragma: no cover
+    import pwd
+    _USER = pwd.getpwuid(os.getuid())[0]
+else:
+    _USER = getpass.getuser()
+
+PATH_CACHE = os.path.join(tempfile.gettempdir(), _USER + "_populi_dl_cache")  # from define.py
+PATH_COOKIES = os.path.join(PATH_CACHE, 'cookies')  # ^
 
 def __fixed_init__(self, version, name, value,
                    port, port_specified,
@@ -224,8 +234,7 @@ def make_cookie_values(cj, class_name):
 
     cookies = [c.name + '=' + c.value
                for c in cj
-               if c.domain == "class.coursera.org"
-               and c.path == path]
+               if c.domain == class_name]
 
     return '; '.join(cookies)
 
@@ -234,14 +243,15 @@ def find_cookies_for_class(cookies_file, class_name):
     """
     Return a RequestsCookieJar containing the cookies for
     .coursera.org and class.coursera.org found in the given cookies_file.
+    TODO: Purge coursera specific code.
     """
 
     path = "/" + class_name
 
     def cookies_filter(c):
-        return c.domain == ".coursera.org" \
-            or (c.domain == "class.coursera.org" and c.path == path)
-
+#        return c.domain == ".coursera.org" \
+#            or (c.domain == "class.coursera.org" and c.path == path)
+        return c.domain == class_name
     cj = get_cookie_jar(cookies_file)
 
     new_cj = requests.cookies.RequestsCookieJar()
