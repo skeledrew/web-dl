@@ -13,7 +13,7 @@
           
           [[init-poolmanager
             (fn [self connections maxsize &optional [block False]]
-                (setv (. self poolmanager) (PoolManager &optional [num-pools connections] [maxsize maxsize] [block block] [ssl_version (. ssl PROTOCOL_TLSv1)])))]])
+                (setv (. self poolmanager) (PoolManager :num-pools connections :maxsize maxsize :block block :ssl_version (. ssl PROTOCOL_TLSv1))))]])
 
 (defclass Populi []
           "Holds information accessed on Populi website."
