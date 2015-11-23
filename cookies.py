@@ -120,13 +120,13 @@ def login(session, username, password, class_name=None):
         'X-CSRF2-Cookie': csrf2cookie,
         'X-CSRF2-Token': csrf2token,
     }
-
+    """
+    
     data = {
         'email': username,
         'password': password,
         'webrequest': 'true'
     }
-    """
     # Auth API V3
     r = session.post(AUTH_URL_V3, data=data,
                      headers=headers, allow_redirects=False)
