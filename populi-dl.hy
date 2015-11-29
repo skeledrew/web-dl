@@ -4,7 +4,7 @@
 ; Created: 15-11-14
 
 
-(import argparse requests ssl re)
+(import argparse requests ssl re os)
 (import [requests.adapters [HTTPAdapter]])
 (import [.cookies [AuthenticationFailed get_cookies make_cookie_values TLSAdapter]])
 (import [bs4 [BeautifulSoup]])
@@ -64,7 +64,9 @@
       "Spider html pages, using filter to stick to related pages
       15-11-22"
       (setv page (get-page (if (= (get url 0) "/") (+ (. pop proto) (. pop subdom) (. pop topdom) url) url)))
-      (save (.prettify page) (+ (or (. pop base-path) "~/Documents") "/populi-dl/courses" url))
+      (setv save-path (+ (or (. pop base-path) "~/Documents") "/populi-dl/courses" url))
+      (if (not (.exists (. os path) save-path)) (.makedirs os save-path))
+      (save (.prettify page) (+ save-path ".page.html"))
       (for [link (.find-all page :href (.compile re filter))] (get-course-material link filter))
       )
 
